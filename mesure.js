@@ -78,12 +78,14 @@ function updateGondoleDataList() {
             historyItem.innerText = `Quantité: ${quantity} `;
 
             const editButton = document.createElement('button');
+            editButton.className = 'edit';
             editButton.innerText = 'Modifier';
             editButton.onclick = function () { editQuantity(key, index); };
             historyItem.appendChild(editButton);
 
             const deleteButton = document.createElement('button');
-            deleteButton.innerText = 'X';
+            deleteButton.className = 'delete';
+            deleteButton.innerText = 'Suppr.';
             deleteButton.onclick = function () { deleteQuantity(key, index); };
             historyItem.appendChild(deleteButton);
 
