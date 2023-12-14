@@ -16,9 +16,6 @@ h2 {
     margin-bottom: 20px;
 }
 
-.input-group {
-    margin-bottom: 10px;
-}
 
 /* Styles des inputs */
 input[type="text"],
@@ -28,6 +25,8 @@ input[type="number"] {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
+
 
 /* Styles des boutons */
 button {
@@ -46,12 +45,14 @@ button:hover {
     background-color: #4CAF50;
     /* Vert */
     color: white;
+    margin: 5px;
 }
 
 .remove {
     background-color: #f44336;
     /* Rouge */
     color: white;
+    margin: 5px;
 }
 
 .delete {
@@ -75,6 +76,7 @@ ul li {
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
+    width: fit-content;
 }
 
 .accordion-header {
