@@ -23,8 +23,24 @@ function addInput() {
         <button class="remove" onclick="removeInput(${inputId})">Supprimer</button>`;
 
     container.appendChild(inputGroup);
+    const quantityInput = document.getElementById(`quantity-${inputId}`);
+    quantityInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            saveData(inputId - 1);
+        }
+    });
+
     inputId++;
 }
+
+// function addGroup() {
+//     const groupName = document.getElementById('new-group-name').value;
+//     if (groupName && !gondoleData[groupName]) {
+//         gondoleData[groupName] = {};
+//         updateGondoleDataList();
+//         document.getElementById('new-group-name').value = ''; // Clear input field
+//     }
+// }
 
 function removeInput(id) {
     const inputGroup = document.getElementById(`input-group-${id}`);
@@ -35,7 +51,8 @@ function removeInput(id) {
 function saveData(id) {
     const name = document.getElementById(`name-${id}`).value || `Gondole ${id}`;
     const length = parseFloat(document.getElementById(`length-${id}`).value);
-    const quantity = parseFloat(document.getElementById(`quantity-${id}`).value);
+    const quantityInput = document.getElementById(`quantity-${id}`);
+    const quantity = parseFloat(quantityInput.value);
 
     if (length && quantity) {
         const totalLength = length * quantity;
@@ -49,6 +66,8 @@ function saveData(id) {
         localStorage.setItem("gondoleData", JSON.stringify(gondoleData));
 
         updateGondoleDataList();
+        // quantityInput.value = '';
+        quantityInput.focus();
         document.getElementById(`quantity-${id}`).value = '';
     }
 }
@@ -62,12 +81,13 @@ function updateGondoleDataList() {
         const accordionItem = document.createElement('div');
         accordionItem.className = 'accordion-item';
         accordionItem.innerHTML = `
-            <div class="accordion-header" onclick="toggleAccordion('${key}')">
-                ${gondoleData[key].name} (${gondoleData[key].length} cm): ${totalLengthInMeters.toFixed(2)} m, Quantité Totale = ${gondoleData[key].totalQuantity}
-            </div>
-            <div class="accordion-content" id="accordion-${key}">
-                <ul id="history-${key}"></ul>
-            </div>
+        <div class="accordion-header" onclick="toggleAccordion('${key}')">
+        ${gondoleData[key].name} (${gondoleData[key].length} cm): ${totalLengthInMeters.toFixed(2)} m, Quantité Totale = ${gondoleData[key].totalQuantity}
+        <button class="delete-item" onclick="deleteItem('${key}')">Supprimer</button>
+        </div>
+        <div class="accordion-content" id="accordion-${key}">
+        <ul id="history-${key}"></ul>
+        </div>
         `;
 
         list.appendChild(accordionItem);
@@ -92,6 +112,14 @@ function updateGondoleDataList() {
             historyList.appendChild(historyItem);
         });
     });
+}
+
+function deleteItem(key) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) {
+        delete gondoleData[key];
+        localStorage.setItem("gondoleData", JSON.stringify(gondoleData));
+        updateGondoleDataList();
+    }
 }
 
 function toggleAccordion(key) {
@@ -151,3 +179,49 @@ function clearCache() {
         location.reload();
     }
 }
+
+function downloadExcel() {
+    // Créer un nouveau classeur
+    const wb = XLSX.utils.book_new();
+
+    // Données pour le fichier Excel
+    let excelData = [];
+    Object.keys(gondoleData).forEach(key => {
+        const item = gondoleData[key];
+        excelData.push({
+            "Nom": item.name,
+            "Longueur (m)": item.length,
+            "Quantité": item.totalQuantity,
+            "Longueur Totale (m)": item.totalLength / 100
+        });
+    });
+
+    // Conversion des données en feuille de travail
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Styliser l'en-tête
+    const headerRange = XLSX.utils.decode_range(ws['!ref']); // Obtient la plage de l'en-tête
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+        const address = XLSX.utils.encode_col(C) + "1"; // Génère l'adresse de la cellule
+        if (!ws[address]) continue;
+        ws[address].s = { // Style de la cellule
+            font: { bold: true },
+            fill: { bgColor: { rgb: "FFFFAA00" } },
+            border: {
+                top: { style: "thin" },
+                bottom: { style: "thin" },
+                left: { style: "thin" },
+                right: { style: "thin" }
+            }
+        };
+    }
+
+    // Ajouter la feuille de travail au classeur
+    XLSX.utils.book_append_sheet(wb, ws, "Données");
+
+    // Écrire le fichier
+    XLSX.writeFile(wb, "gondoleData.xlsx");
+}
+
+
+

@@ -9,16 +9,18 @@
 </head>
 <body>
     <h1>Calculateur de Rails pour Gondoles</h1>
-  
+    
     <div id="input-container"></div>
     <button onclick="addInput()">Ajouter une gondole</button>
     <h2>Total Enregistrés:</h2>
     <ul id="saved-totals"></ul>
+    <button onclick="downloadExcel()">Télécharger en Excel</button>
     <button onclick="clearCache()">
         Vider le cache
-    </button>
+    </button>   
 </body>
 
-<script src="Mesure.js"></script>
-
+<script src="mesure.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
 </html>
